@@ -2,15 +2,15 @@
 
 return [
     'a' => [
-        'host' => '112.74.107.106',
+        'host' => '127.0.0.1',
         'port' => 6379,
-        'auth' => 'reaburoa_redis',
+        'auth' => '***',
         'timeout' => 5
     ],
     'b' => [
-        'host' => '112.74.107.106',
+        'host' => '127.0.0.1',
         'port' => 6379,
-        'auth' => 'reaburoa_redis',
+        'auth' => '***',
         'timeout' => 5
     ],
     'cache' => 'a|b',
