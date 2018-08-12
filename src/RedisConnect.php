@@ -100,8 +100,8 @@ class RedisConnect
     public static function getConfig()
     {
         if (true || empty(self::$config)) {
-           // self::$config = include dirname(dirname(__FILE__)).'/conf/redis.php';
-            self::$config = require_once(dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/conf/redis.php');
+            self::$config = require_once(dirname(dirname(__FILE__)).'/conf/redis.php');
+            //self::$config = require_once(dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/conf/redis.php');
         }
         if (strpos(self::$config[self::$cluster], self::$conf_separator) === false) {
             $redis_node = self::$config[self::$cluster];
