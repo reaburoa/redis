@@ -48,8 +48,9 @@ class MyRedis
             $key = $arguments[0];
             self::$redis = RedisConnect::getInstance(self::$channel, $key)->getRedis();
             $ret = call_user_func_array([self::$redis, $fun_name], $arguments);
-            if ($ret === false) {
-                throw new \Exception(self::$redis->getLastError());
+            $last_error = self::$redis->getLastError();
+            if ($ret === false && $last_error) {
+                throw new \Exception($last_error);
             }
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), $e->getCode());
