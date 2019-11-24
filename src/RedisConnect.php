@@ -34,13 +34,14 @@ class RedisConnect
      * @param string $hash_key hash value which can find redis server
      * @throws \Exception when cluster is false
      */
-    private function __construct($cluster, $hash_key = '')
+    private function __construct(array $conf, $cluster, $hash_key = '')
     {
         if (!$cluster) {
             throw new \Exception('Params cluster must be provided');
         }
         self::$cluster = $cluster;
         self::$hash_key = md5($hash_key);
+        self::$config = $conf;
     }
 
     /**
@@ -49,14 +50,14 @@ class RedisConnect
      * @throws \Exception when cluster is false
      * @return self
      */
-    public static function getInstance($cluster, $hash_key = '')
+    public static function getInstance(array $conf, $cluster, $hash_key = '')
     {
-        if (!$cluster) {
+        if (empty($conf) || !$cluster) {
             throw new \Exception('Params cluster must be provided');
         }
         $static_key = $hash_key ? md5($cluster.substr(md5($hash_key), 0, 1)) : md5($cluster);
         if (!self::$instance || !isset(self::$instance[$static_key])) {
-            self::$instance[$static_key] = new self($cluster, $hash_key);
+            self::$instance[$static_key] = new self($conf, $cluster, $hash_key);
         }
 
         return self::$instance[$static_key];
@@ -83,7 +84,7 @@ class RedisConnect
             if ($ret === false) {
                 throw new \Exception($redis->getLastError());
             }
-            if (isset($conf['auth'])) {
+            if (isset($conf['auth']) && $conf['auth']) {
                 $redis->auth($conf['auth']);
             }
             self::$redis[$redis_key] = $redis;
@@ -99,10 +100,6 @@ class RedisConnect
      */
     public static function getConfig()
     {
-        if (true || empty(self::$config)) {
-            //self::$config = require_once(dirname(dirname(__FILE__)).'/conf/redis.php');
-            self::$config = require_once(dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/conf/redis.php');
-        }
         if (strpos(self::$config[self::$cluster], self::$conf_separator) === false) {
             $redis_node = self::$config[self::$cluster];
         } else {

@@ -2,7 +2,7 @@
 
 namespace Rean;
 
-class MyRedis
+abstract class MyRedis
 {
     /**
      * @var $redis \Redis
@@ -33,11 +33,13 @@ class MyRedis
         }
         $static_key = md5($cluster);
         if (!self::$instance || !isset(self::$instance[$static_key])) {
-            self::$instance[$static_key] = new self($cluster);
+            self::$instance[$static_key] = new static($cluster);
         }
 
         return self::$instance[$static_key];
     }
+
+    abstract public function getRedisConf();
 
     public function __call($fun_name, $arguments)
     {
@@ -46,7 +48,7 @@ class MyRedis
         }
         try {
             $key = $arguments[0];
-            self::$redis = RedisConnect::getInstance(self::$channel, $key)->getRedis();
+            self::$redis = RedisConnect::getInstance($this->getRedisConf(), self::$channel, $key)->getRedis();
             $ret = call_user_func_array([self::$redis, $fun_name], $arguments);
             $last_error = self::$redis->getLastError();
             if ($ret === false && $last_error) {
